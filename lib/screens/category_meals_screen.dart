@@ -3,22 +3,53 @@ import '../dummy_data.dart';
 import '../models/meal.dart';
 import '../widgets/meal_item.dart';
 
-class CategoryMealsScreen extends StatelessWidget {
+class CategoryMealsScreen extends StatefulWidget {
   static const routeName = '/category_meals';
 
   @override
-  Widget build(BuildContext context) {
-    final routeArgs =
-        ModalRoute.of(context).settings.arguments as Map<String, String>;
+  _CategoryMealsScreenState createState() => _CategoryMealsScreenState();
+}
 
-    final String categoryId = routeArgs['id'];
-    final categoryTitle = routeArgs['title'];
-    final List<Meal> categoryMeals = DUMMY_MEALS.where((meal) {
-      return meal.categories.contains(categoryId);
-    }).toList();
+class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
+  String categoryTitle;
+  List<Meal> categoryMeals;
+  bool initDepencies = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    // this function excute more than once which is why
+    // we need if statment to excute it only once.
+    if (!initDepencies) {
+      final routeArgs =
+          ModalRoute.of(context).settings.arguments as Map<String, String>;
+      String categoryId = routeArgs['id'];
+      categoryTitle = routeArgs['title'];
+      categoryMeals = DUMMY_MEALS.where((meal) {
+        return meal.categories.contains(categoryId);
+      }).toList();
+      initDepencies = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  void _removeMeal(String mealId) {
+    setState(() {
+      categoryMeals.removeWhere((meal) => meal.id == mealId);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recipet $categoryId'),
+        title: Text('$categoryTitle'),
       ),
       body: ListView.builder(
         itemBuilder: (ctx, index) {
@@ -30,6 +61,7 @@ class CategoryMealsScreen extends StatelessWidget {
             affordability: meal.affordability,
             complexity: meal.complexity,
             duration: meal.duration,
+            removeMeal: _removeMeal,
           );
         },
         itemCount: categoryMeals.length,
