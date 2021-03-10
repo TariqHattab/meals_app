@@ -5,7 +5,9 @@ import '../widgets/meal_item.dart';
 
 class CategoryMealsScreen extends StatefulWidget {
   static const routeName = '/category_meals';
+  List<Meal> _availableMeals;
 
+  CategoryMealsScreen(this._availableMeals);
   @override
   _CategoryMealsScreenState createState() => _CategoryMealsScreenState();
 }
@@ -31,7 +33,7 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
           ModalRoute.of(context).settings.arguments as Map<String, String>;
       String categoryId = routeArgs['id'];
       categoryTitle = routeArgs['title'];
-      categoryMeals = DUMMY_MEALS.where((meal) {
+      categoryMeals = widget._availableMeals.where((meal) {
         return meal.categories.contains(categoryId);
       }).toList();
       initDepencies = true;
